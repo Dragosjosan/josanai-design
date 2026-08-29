@@ -7,7 +7,7 @@ Plain CSS design tokens and reusable elements. There is no build step or package
 From the consuming repository:
 
 ```sh
-git submodule add  frontend/src/design
+git submodule add git@github.com:Dragosjosan/josanai-design.git frontend/src/design
 git submodule update --init
 ```
 
