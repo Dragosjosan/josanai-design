@@ -4,18 +4,24 @@
   --surface: #ffffff;
   --ink: #16181c;
   --ink-soft: #3c4148;
-  --muted: #74797f;
+  --muted: #656b72;
   --muted-2: #a2a7ad;
   --hairline: #ebedf0;
   --hairline-strong: #d7dade;
-  --accent: oklch(0.58 0.12 210);
-  --accent-soft: oklch(0.96 0.02 210);
+  --control-border: #8b9198;
+  --accent: light-dark(#007b8f, #67bfce);
+  --accent-soft: light-dark(#edf5f6, #182e32);
+  --on-accent: light-dark(#ffffff, #16181c);
 
   /* State color is a small signal. Surfaces and body copy stay neutral. */
-  --info: var(--accent);
   --success: #168b4e;
   --warning: #c1840c;
   --danger: #d43c35;
+
+  /* Data series stay distinct from the accent and semantic states. */
+  --chart-1: light-dark(#007b8f, #67bfce);
+  --chart-2: light-dark(#74679d, #b9aadd);
+  --chart-3: light-dark(#996b39, #d7ac79);
 
   /* Spacing: a 4px base scale. */
   --space-0: 0;
@@ -49,8 +55,9 @@
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* One radius for all component surfaces and controls. */
+  /* Shared corners; switches, status dots, and spinners retain round shapes. */
   --radius: 4px;
+  --control-height: 40px;
   --pad: 40px;
   --page-gutter: clamp(20px, 5vw, var(--pad));
   --measure: 68ch;
@@ -66,7 +73,9 @@
 /* Resolve neutral state aliases in each theme scope, including nested themes. */
 :root,
 [data-theme],
-[data-skin] {
+[data-skin],
+[data-accent] {
+  --info: var(--accent);
   --info-soft: var(--surface);
   --info-ink: var(--ink-soft);
   --info-border: var(--hairline);
@@ -94,7 +103,7 @@
   --muted-2: #5c6068;
   --hairline: #242830;
   --hairline-strong: #32373f;
-  --accent-soft: oklch(0.25 0.05 210);
+  --control-border: #707983;
   --success: #58ca88;
   --warning: #e9b347;
   --danger: #f07870;
@@ -114,9 +123,9 @@
   --muted-2: #9a9a9a;
   --hairline: #dcdcdc;
   --hairline-strong: #bcbcbc;
+  --control-border: #868686;
   --accent: #1a4fff;
   --accent-soft: #eef2ff;
-  --info: #1a4fff;
   --radius: 0;
   --font-sans: "JetBrains Mono", ui-monospace, monospace;
 }
@@ -130,7 +139,29 @@
   --muted-2: #555;
   --hairline: #2a2a2a;
   --hairline-strong: #3a3a3a;
+  --control-border: #757575;
   --accent: #7ea1ff;
   --accent-soft: #18222e;
-  --info: #7ea1ff;
+}
+
+/* Accent can be selected for a whole page or a single component.
+   light-dark() resolves against the element's inherited color-scheme. */
+[data-accent="teal"] {
+  --accent: light-dark(#007b8f, #67bfce);
+  --accent-soft: light-dark(#edf5f6, #182e32);
+}
+
+[data-accent="gray"] {
+  --accent: light-dark(#5f6b70, #b0bbc0);
+  --accent-soft: light-dark(#f0f2f3, #272d31);
+}
+
+[data-accent="black"] {
+  --accent: light-dark(#202326, #e8eaed);
+  --accent-soft: light-dark(#eff0f1, #2a2c30);
+}
+
+[data-accent="blue"] {
+  --accent: light-dark(#466583, #91b4d7);
+  --accent-soft: light-dark(#eff3f7, #202d3b);
 }

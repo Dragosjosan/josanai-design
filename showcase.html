@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./fonts.css" />
     <link rel="stylesheet" href="./tokens.css" />
     <link rel="stylesheet" href="./elements.css" />
+    <script src="./behaviors.js" defer></script>
     <style>
       .sheet { width: min(1280px, calc(100% - 96px)); margin-inline: auto; }
       .masthead { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 28px; border-bottom: 1px solid var(--hairline-strong); }
@@ -15,38 +16,35 @@
       .meta, .section-head, .annotation, .index, .folio { font-family: var(--font-mono); font-size: 11px; font-weight: 400; }
       .meta, .annotation, .folio { color: var(--muted); }
       .masthead .meta { margin: 0; }
+      .accent-picker { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; }
+      .accent-picker .input { width: auto; min-width: 112px; }
       .intro { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; padding-block: 54px 68px; align-items: end; }
       .intro-title { grid-column: 1 / 10; }
       .intro h1 { margin: 12px 0 0 -0.065em; font-size: clamp(72px, 12vw, 164px); font-weight: 500; letter-spacing: -0.085em; line-height: 0.95; }
       .intro .meta { margin: 0; }
-      .index { grid-column: 11 / 13; display: grid; gap: 7px; padding-bottom: 4px; }
+      .index { font-size: 13px; grid-column: 10 / 13; display: grid; gap: 7px; padding-bottom: 4px; }
       .index a { display: flex; justify-content: space-between; gap: 16px; color: var(--ink-soft); text-decoration: none; }
       .index a:hover { color: var(--accent); }
       .index span { color: var(--muted); }
-      .composition { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 96px; padding-bottom: 96px; }
-      .specimen { min-width: 0; scroll-margin-top: 32px; }
-      .section-head { display: flex; align-items: baseline; gap: 20px; border-top: 1px solid var(--ink); padding-top: 12px; margin-bottom: 28px; }
-      .section-head h2 { margin: 0; font: inherit; letter-spacing: 0; }
+      .composition { display: flex; flex-direction: column; gap: 64px; padding-bottom: 96px; }
+      .specimen { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 64px; min-width: 0; scroll-margin-top: 32px; border-top: 1px solid var(--hairline-strong); padding-top: 24px; }
+      .section-head { display: grid; grid-template-columns: 24px minmax(0, 1fr); align-content: start; align-items: baseline; gap: 12px; }
+      .section-head h2 { margin: 0; font: inherit; font-size: 13px; letter-spacing: 0; }
       .section-head > span:first-child { color: var(--muted); }
-      .section-head .annotation { margin-left: auto; }
-      .controls { grid-column: 1 / 6; }
-      .signals { grid-column: 8 / 13; padding-top: 100px; }
-      .records { grid-column: 2 / 10; }
-      .progress-note { grid-column: 11 / 13; align-self: end; padding-bottom: 14px; }
-      .type { grid-column: 1 / 7; }
-      .foundations { grid-column: 9 / 13; padding-top: 76px; }
-      .structure { grid-column: 2 / 7; }
-      .blank { grid-column: 9 / 13; padding-top: 68px; }
-      .semantics { grid-column: 4 / 12; }
+      .section-head .annotation { grid-column: 2; margin: 0; }
+      .specimen-body { min-width: 0; }
+      .controls .specimen-body, .signals .specimen-body, .type .specimen-body, .foundations .specimen-body, .selection-specimen .specimen-body, .activity-specimen .specimen-body { max-width: 640px; }
+      .progress-note { margin-top: 28px; }
+      .selection-demo, .progress-demo { margin-top: 28px; }
+      .chart-inspector { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, .65fr); gap: 24px; align-items: center; margin-top: 24px; }
       .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-      .control-form { margin-top: 32px; }
-      .control-form .field + .field { margin-top: 20px; }
+      .control-form { margin-top: 24px; }
+      .control-form .field + .field { margin-top: 24px; }
       .annotation { margin: 16px 0 0; }
-      .form-actions { margin-top: 20px; }
-      .form-status { min-height: 18px; margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+      .form-status { min-height: 20px; margin: 12px 0 0; font-size: 13px; color: var(--muted); }
       .state-list { display: flex; flex-wrap: wrap; gap: 12px 20px; margin-bottom: 28px; }
       .signals .alert:last-of-type { border-bottom: 0; }
-      .signal-foot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; gap: 16px; }
+      .signal-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; margin-top: 20px; gap: 16px; }
       .signal-foot .annotation { margin: 0; }
       .record-name { color: var(--ink); font-weight: 500; }
       .records .table { background: transparent; }
@@ -54,7 +52,7 @@
       .records .table th:first-child, .records .table td:first-child { padding-left: 0; }
       .records .table th:last-child, .records .table td:last-child { padding-right: 0; }
       .records .table td { padding-block: 18px; }
-      .record-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 20px; }
+      .record-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-top: 20px; }
       .record-footer p { margin: 0; }
       .progress-note .row { gap: 12px; color: var(--muted); }
       .progress-note p { margin-top: 16px; }
@@ -65,7 +63,7 @@
       .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 28px; }
       .swatch { display: block; height: 42px; border: 1px solid var(--hairline); border-radius: var(--radius); }
       .palette .annotation { display: block; margin-top: 8px; font-size: 10px; }
-      .foundation-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding-block: 12px; border-bottom: 1px solid var(--hairline); font-size: 12px; }
+      .foundation-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding-block: 12px; border-bottom: 1px solid var(--hairline); font-size: 13px; }
       .foundation-row span:last-child { font-family: var(--font-mono); color: var(--muted); font-size: 11px; }
       .spacing-scale { display: flex; align-items: end; gap: 8px; height: 68px; margin-top: 24px; }
       .spacing-scale i { width: 12px; height: var(--step); background: var(--hairline-strong); }
@@ -75,51 +73,63 @@
       .primitive-set .annotation { margin: 0 0 8px; }
       .primitive-block { min-height: 16px; border: 1px solid var(--hairline-strong); border-radius: var(--radius); background: var(--surface); flex: 1; }
       .primitive-set .split { grid-template-columns: 2fr 1fr; gap: 8px; }
-      .primitive-set .grid { gap: 8px; }
+      .primitive-set .grid { gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .blank .empty-state { padding-top: 0; }
       .semantic-columns { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; }
       .semantic-columns h3 { font-size: 20px; font-weight: 500; }
-      .semantic-columns p, .semantic-columns li, .semantic-columns blockquote { font-size: 13px; color: var(--ink-soft); }
+      .semantic-columns p, .semantic-columns li, .semantic-columns blockquote { font-size: 14px; color: var(--ink-soft); }
       details { border-top: 1px solid var(--hairline); margin-top: 24px; padding-top: 12px; }
-      summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+      summary { cursor: pointer; color: var(--ink-soft); font-size: 13px; padding-block: 12px; }
       details pre { margin-top: 16px; }
       .folio { display: flex; justify-content: space-between; gap: 24px; padding-block: 24px 40px; border-top: 1px solid var(--hairline-strong); }
-      .folio a { color: inherit; }
+      .folio a { display: inline-flex; align-items: center; gap: 8px; color: inherit; }
       .skip-link { position: absolute; top: 8px; left: 8px; z-index: 60; padding: 8px; background: var(--surface); transform: translateY(-150%); }
       .skip-link:focus { transform: none; }
       dialog.sidepanel:not([open]) { display: none; }
       dialog.sidepanel::backdrop { background: rgb(0 0 0 / 15%); }
       .sidepanel-head h2 { font-size: 16px; margin: 0; }
+      .icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+      .panel-fields { min-width: 0; padding: 0; margin: 0; border: 0; }
+      .panel-note { font-size: 13px; color: var(--muted); margin: 0; }
+      .records .table th { font-size: 13px; }
+      .records .table { table-layout: fixed; }
+      .records .table th:first-child { width: 43%; }
+      .records .table th:nth-child(2) { width: 27%; }
+      .records .table th:nth-child(3), .records .table th:nth-child(4) { width: 15%; }
+      .record-name { overflow-wrap: anywhere; }
       [hidden] { display: none !important; }
       @media (max-width: 960px) {
         .sheet { width: calc(100% - 48px); }
         .intro-title { grid-column: 1 / 10; }
         .index { grid-column: 10 / 13; }
-        .controls { grid-column: 1 / 7; }
-        .signals { grid-column: 8 / 13; padding-top: 64px; }
-        .records { grid-column: 1 / 10; }
-        .progress-note { grid-column: 10 / 13; }
-        .foundations { grid-column: 8 / 13; }
-        .structure { grid-column: 1 / 7; }
-        .blank { grid-column: 8 / 13; }
-        .semantics { grid-column: 2 / 12; }
+        .specimen { grid-template-columns: 160px minmax(0, 1fr); gap: 32px; }
+        .chart-inspector { grid-template-columns: minmax(0, 1fr); gap: 12px; }
         .state-list { gap: 12px; }
       }
-      @media (max-width: 640px) {
+      @media (max-width: 720px) {
         .sheet { width: calc(100% - 40px); }
-        .masthead { padding-block: 20px; }
+        .masthead { padding-block: 20px; gap: 16px; flex-wrap: wrap; }
         .masthead .meta { font-size: 10px; }
         .intro { grid-template-columns: 1fr; gap: 32px; padding-block: 40px 48px; }
         .intro-title, .index { grid-column: auto; }
         .intro h1 { font-size: clamp(66px, 17vw, 108px); }
-        .index { grid-template-columns: 1fr 1fr; gap: 10px 32px; }
-        .composition { display: flex; flex-direction: column; gap: 56px; padding-bottom: 56px; }
-        .specimen { width: 100%; padding-top: 0; }
-        .signals, .foundations, .blank { width: 88%; margin-left: auto; }
-        .section-head { margin-bottom: 24px; }
-        .progress-note { align-self: flex-start; margin-top: -28px; padding: 0; }
-        .progress-note p { margin-top: 8px; }
-        .records .table th, .records .table td { padding-inline: 8px; font-size: 11px; }
+        .index { grid-template-columns: 1fr 1fr; gap: 0 24px; }
+        .index a { min-height: 44px; align-items: center; }
+        .composition { gap: 48px; padding-bottom: 56px; }
+        .specimen { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 20px; }
+        .section-head { grid-template-columns: 24px minmax(0, 1fr); }
+        .records .table th, .records .table td { padding-inline: 4px; font-size: 13px; }
+        .records .table .badge { gap: 5px; }
+        .records .table th:first-child { width: 40%; }
+        .records .table th:nth-child(2) { width: 28%; }
+        .records .table th:nth-child(3), .records .table th:nth-child(4) { width: 16%; }
+        .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .actions .btn { width: 100%; padding-inline: 10px; }
+        .section-head { gap: 12px; }
+        .section-head .annotation { font-size: 10px; }
+        .folio a, summary { min-height: 44px; }
+        .folio { align-items: center; }
+        .type-sizes { column-gap: 8px; }
         .type-mark { font-size: 140px; }
         .semantic-columns { grid-template-columns: 1fr; gap: 24px; }
         .folio { font-size: 10px; }
@@ -127,11 +137,20 @@
     </style>
   </head>
   <body id="top">
+    <svg class="icon-sprite" aria-hidden="true" focusable="false"><defs><symbol id="icon-settings" viewBox="0 0 20 20"><path d="M3 5h6m4 0h4M3 15h4m4 0h6"/><circle cx="11" cy="5" r="2"/><circle cx="9" cy="15" r="2"/></symbol><symbol id="icon-info" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 9v5m0-8v.1"/></symbol><symbol id="icon-check" viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></symbol><symbol id="icon-warning" viewBox="0 0 20 20"><path d="M10 3 18 17H2L10 3Z"/><path d="M10 8v4m0 2v.1"/></symbol><symbol id="icon-error" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="m7.5 7.5 5 5m0-5-5 5"/></symbol><symbol id="icon-close" viewBox="0 0 20 20"><path d="m5 5 10 10m0-10L5 15"/></symbol><symbol id="icon-plus" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></symbol><symbol id="icon-up" viewBox="0 0 20 20"><path d="M10 17V3m-5 5 5-5 5 5"/></symbol></defs></svg>
     <a href="#components" class="skip-link">Skip to components</a>
     <div class="sheet">
       <header class="masthead">
         <a href="#top" class="brand">josan.ai / design</a>
-        <p class="meta">Interface studies &nbsp; / &nbsp; 01</p>
+        <label class="accent-picker" for="accent-select">
+          <span>Accent</span>
+          <select class="input" id="accent-select">
+            <option value="teal">Teal</option>
+            <option value="gray">Gray</option>
+            <option value="black">Black</option>
+            <option value="blue">Blue</option>
+          </select>
+        </label>
       </header>
       <main>
         <header class="intro">
@@ -144,16 +163,18 @@
             <a href="#states"><span>02</span> States</a>
             <a href="#records"><span>03</span> Records</a>
             <a href="#foundations"><span>04</span> Foundations</a>
+            <a href="#patterns"><span>09</span> Patterns</a>
           </nav>
         </header>
         <div class="composition">
           <section id="components" class="specimen controls" aria-labelledby="controls-title">
             <header class="section-head"><span>01</span><h2 id="controls-title">Controls</h2><span class="annotation">Do one thing.</span></header>
+            <div class="specimen-body">
             <div class="actions">
               <button type="submit" form="workspace-form" class="btn btn-primary">Save changes</button>
               <button type="reset" form="workspace-form" class="btn">Reset</button>
-              <button type="button" class="btn btn-ghost" data-open-panel>Settings <span aria-hidden="true">↗</span></button>
-              <button type="button" class="btn btn-compact" disabled>Unavailable</button>
+              <button type="button" class="btn btn-ghost" data-panel="workspace">Settings <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-settings"></use></svg></button>
+              <button type="button" class="btn" disabled>Unavailable</button>
             </div>
             <form id="workspace-form" class="control-form" novalidate>
               <div class="field">
@@ -168,30 +189,34 @@
               </div>
               <label class="check-row">
                 <span class="check-copy"><span class="check-label">Email notifications</span><span class="check-note">Only when something needs your attention.</span></span>
-                <input type="checkbox" name="notifications" checked />
+                <input type="checkbox" role="switch" name="notifications" checked />
                 <span class="check-control" aria-hidden="true"><span class="check-thumb"></span></span>
               </label>
               <p id="form-status" class="form-status" role="status"></p>
             </form>
+            </div>
           </section>
 
           <section id="states" class="specimen signals" aria-labelledby="states-title">
             <header class="section-head"><span>02</span><h2 id="states-title">States</h2><span class="annotation">Just enough.</span></header>
+            <div class="specimen-body">
             <div class="state-list" aria-label="Status badges">
               <span class="badge badge-neutral">Draft</span><span class="badge">Running</span><span class="badge badge-success">Saved</span><span class="badge badge-warning">Review</span><span class="badge badge-danger">Failed</span>
             </div>
             <div id="notification" class="alert">
-              <span class="alert-icon" aria-hidden="true">i</span><div class="alert-content"><h3 class="alert-title">An update is available.</h3></div>
-              <button type="button" class="alert-close" aria-label="Dismiss update">×</button>
+              <span class="alert-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-info"></use></svg></span><div class="alert-content"><h3 class="alert-title">An update is available.</h3></div>
+              <button type="button" class="alert-close" aria-label="Dismiss update"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button>
             </div>
-            <div class="alert alert-success"><span class="alert-icon" aria-hidden="true">✓</span><div class="alert-content"><h3 class="alert-title">All changes saved.</h3></div></div>
-            <div class="alert alert-warning"><span class="alert-icon" aria-hidden="true">!</span><div class="alert-content"><h3 class="alert-title">You’re close to your limit.</h3><p>82 of 100 runs used.</p></div></div>
-            <div class="alert alert-danger"><span class="alert-icon" aria-hidden="true">×</span><div class="alert-content"><h3 class="alert-title">Connection interrupted.</h3><p>Check your credentials and try again.</p></div></div>
+            <div class="alert alert-success"><span class="alert-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-check"></use></svg></span><div class="alert-content"><h3 class="alert-title">All changes saved.</h3></div></div>
+            <div class="alert alert-warning"><span class="alert-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-warning"></use></svg></span><div class="alert-content"><h3 class="alert-title" id="usage-title">You’re close to your limit.</h3><p id="usage-summary">82 of 100 runs used.</p></div></div>
+            <div class="alert alert-danger"><span class="alert-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-error"></use></svg></span><div class="alert-content"><h3 class="alert-title">Connection interrupted.</h3><p>Check your credentials and try again.</p></div></div>
             <div class="signal-foot"><p class="annotation">A mark. A line. A message.</p><button type="button" class="linkbtn" id="restore-notification" hidden>Restore update</button></div>
+            </div>
           </section>
 
           <section id="records" class="specimen records" aria-labelledby="records-title">
             <header class="section-head"><span>03</span><h2 id="records-title">Records</h2><span class="annotation">Recent evaluations</span></header>
+            <div class="specimen-body">
             <div class="table-wrap">
               <table class="table table-hover">
                 <caption class="sr-only">Recent evaluation runs</caption>
@@ -204,38 +229,41 @@
                 </tbody>
               </table>
             </div>
-            <div class="record-footer"><p class="annotation">4 evaluations</p><button class="linkbtn" type="button" data-open-panel>Configure runs <span aria-hidden="true">↗</span></button></div>
+            <div class="record-footer"><p class="annotation" id="run-summary">4 evaluations</p><button class="linkbtn" type="button" data-panel="runs">Configure runs <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-settings"></use></svg></button></div>
+            </div>
           </section>
-          <aside class="progress-note" aria-label="Loading indicators">
-            <div class="row"><span class="spinner spinner-sm" aria-hidden="true"></span><span class="spinner" aria-hidden="true"></span><span class="spinner spinner-lg" aria-hidden="true"></span></div>
-            <p class="annotation">Work in progress.<br />14 / 20 / 28 px</p>
-          </aside>
 
           <section id="foundations" class="specimen type" aria-labelledby="type-title">
             <header class="section-head"><span>04</span><h2 id="type-title">Typography</h2><span class="annotation">Inter / JetBrains Mono</span></header>
+            <div class="specimen-body">
             <p class="type-mark" aria-hidden="true">Aa.</p>
             <div class="type-sizes" aria-label="Type scale in pixels">
               <span class="text-xs">Detail<small>11 / xs</small></span><span class="text-sm">Label<small>12 / sm</small></span><span class="text-md">Control<small>13 / md</small></span><span class="text-base">Body<small>14 / base</small></span>
               <span class="text-lg">Text<small>16 / lg</small></span><span class="text-xl">Title<small>20 / xl</small></span><span class="text-2xl">Type<small>28 / 2xl</small></span><span class="text-3xl">Aa<small>40 / 3xl</small></span>
             </div>
+            </div>
           </section>
           <section class="specimen foundations" aria-labelledby="palette-title">
             <header class="section-head"><span>05</span><h2 id="palette-title">Palette &amp; measure</h2></header>
+            <div class="specimen-body">
             <div class="palette">
               <div><i class="swatch" style="background: var(--bg)"></i><span class="annotation">Paper</span></div>
               <div><i class="swatch" style="background: var(--hairline-strong)"></i><span class="annotation">Line</span></div>
               <div><i class="swatch" style="background: var(--ink)"></i><span class="annotation">Ink</span></div>
               <div><i class="swatch" style="background: var(--accent)"></i><span class="annotation">Accent</span></div>
             </div>
-            <div class="foundation-row"><span>Corner radius</span><span>4 px / everywhere</span></div>
+            <div class="foundation-row"><span>Corner radius</span><span>4 px / surfaces</span></div>
+            <div class="foundation-row"><span>Switch</span><span>Rounded track</span></div>
             <div class="foundation-row"><span>Border</span><span>1 px</span></div>
             <div class="foundation-row"><span>Spacing unit</span><span>4 px</span></div>
             <div class="spacing-scale" aria-hidden="true"><i style="--step: 4px"></i><i style="--step: 8px"></i><i style="--step: 12px"></i><i style="--step: 16px"></i><i style="--step: 24px"></i><i style="--step: 32px"></i><i style="--step: 48px"></i><i style="--step: 64px"></i></div>
             <p class="annotation">4 · 8 · 12 · 16 · 24 · 32 · 48 · 64</p>
+            </div>
           </section>
 
           <section id="layout" class="specimen structure" aria-labelledby="structure-title">
             <header class="section-head"><span>06</span><h2 id="structure-title">Structure</h2><span class="annotation">Space does the work.</span></header>
+            <div class="specimen-body">
             <div class="primitive-set">
               <div><p class="annotation">Stack</p><div class="stack stack-sm" aria-label="Three stacked blocks"><i class="primitive-block"></i><i class="primitive-block"></i><i class="primitive-block"></i></div></div>
               <div><p class="annotation">Row</p><div class="row row-sm" aria-label="Three blocks in a row"><i class="primitive-block"></i><i class="primitive-block"></i><i class="primitive-block"></i></div></div>
@@ -243,23 +271,27 @@
               <div><p class="annotation">Split</p><div class="split" aria-label="Two unequal columns"><i class="primitive-block"></i><i class="primitive-block"></i></div></div>
             </div>
             <article class="card card-compact">
-              <header class="card-header"><h3 class="card-title">Personal workspace</h3><span class="badge badge-neutral">Private</span></header>
+              <header class="card-header"><h3 class="card-title" id="workspace-card-title">Personal workspace</h3><span class="badge badge-neutral">Private</span></header>
               <p class="card-copy">Your sources, evaluations, and settings.</p>
-              <footer class="card-footer"><span class="text-sm text-muted">3 connected sources</span><button type="button" class="iconbtn ghost" data-open-panel aria-label="Open workspace settings">↗</button></footer>
+              <footer class="card-footer"><span class="text-md text-muted" id="source-count">No connected sources</span><button type="button" class="iconbtn ghost" data-panel="workspace" aria-label="Open workspace settings"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-settings"></use></svg></button></footer>
             </article>
+            </div>
           </section>
           <section class="specimen blank" aria-labelledby="empty-title">
             <header class="section-head"><span>07</span><h2 id="empty-title">Empty</h2></header>
+            <div class="specimen-body">
             <div class="empty-state">
-              <span class="empty-state-icon" aria-hidden="true">＋</span>
+              <span class="empty-state-icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-plus"></use></svg></span>
               <h3 class="empty-state-title">No sources yet.</h3>
               <p class="empty-state-copy">Add your first source to get started.</p>
-              <div class="empty-state-actions"><button type="button" class="btn" data-open-panel>Add a source <span aria-hidden="true">↗</span></button></div>
+              <div class="empty-state-actions"><button type="button" class="btn" data-panel="source">Add a source <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-plus"></use></svg></button></div>
+            </div>
             </div>
           </section>
 
           <section id="semantics" class="specimen semantics" aria-labelledby="semantics-title">
             <header class="section-head"><span>08</span><h2 id="semantics-title">Content</h2><span class="annotation">Native HTML</span></header>
+            <div class="specimen-body">
             <div class="semantic-columns">
               <article><h3>A place for the details.</h3><p>Body text, a <a href="./README.md">useful link</a>, and enough room to read. Emphasis comes from <strong>weight</strong> and <em>rhythm</em>.</p><blockquote>Keep only what helps.</blockquote><p class="text-sm">Use <kbd>Tab</kbd> to move between controls.</p></article>
               <div><ol><li>Connect a source.</li><li>Run an evaluation.</li><li>Review the result.</li></ol><div class="divider"></div><div class="divider-label">or start with a template</div></div>
@@ -270,24 +302,156 @@
   &lt;span class="alert-icon" aria-hidden="true"&gt;!&lt;/span&gt;
   &lt;div class="alert-content"&gt;Check your usage.&lt;/div&gt;
 &lt;/div&gt;</code></pre><p class="text-sm text-muted">Import fonts.css, tokens.css, then elements.css. <a href="./README.md">Full reference</a>.</p></details>
+            </div>
           </section>
+          <section id="patterns" class="specimen metrics-specimen" aria-labelledby="metrics-title">
+            <header class="section-head"><span>09</span><h2 id="metrics-title">Metrics</h2><span class="annotation">Value, unit, context.</span></header>
+            <div class="specimen-body">
+            <dl class="metrics">
+              <div class="metric metric-primary"><dt class="metric-label">Completion</dt><dd class="metric-value">84<span class="metric-unit">%</span></dd><dd class="metric-note">This week</dd></div>
+              <div class="metric"><dt class="metric-label">Processed</dt><dd class="metric-value">128<span class="metric-unit">items</span></dd><dd class="metric-note">Across 4 sources</dd></div>
+              <div class="metric"><dt class="metric-label">Average time</dt><dd class="metric-value">2.4<span class="metric-unit">s</span></dd><dd class="metric-note">Per item</dd></div>
+              <div class="metric"><dt class="metric-label">Next run</dt><dd class="metric-value">09:00</dd><dd class="metric-note">Monday · local time</dd></div>
+            </dl>
+            </div>
+          </section>
+
+          <section class="specimen selection-specimen" aria-labelledby="selection-title">
+            <header class="section-head"><span>10</span><h2 id="selection-title">Selection</h2></header>
+            <div class="specimen-body">
+            <div data-tabs>
+              <div class="tabs" role="tablist" aria-label="Workspace views">
+                <button class="tab" id="overview-tab" type="button" role="tab" aria-selected="true" aria-controls="overview-panel">Overview</button>
+                <button class="tab" id="activity-tab" type="button" role="tab" aria-selected="false" aria-controls="activity-panel" tabindex="-1">Activity</button>
+              </div>
+              <div class="tab-panel" role="tabpanel" id="overview-panel" aria-labelledby="overview-tab" tabindex="0"><p class="text-md">4 sources connected. All runs are up to date.</p></div>
+              <div class="tab-panel" role="tabpanel" id="activity-panel" aria-labelledby="activity-tab" tabindex="0" hidden><p class="text-md">Last import completed at 09:00. 128 items processed.</p></div>
+            </div>
+            <fieldset class="form-group selection-demo">
+              <legend>Reporting period</legend>
+              <div class="selection-group">
+                <label class="choice"><input type="radio" name="period" value="day" />Day</label>
+                <label class="choice"><input type="radio" name="period" value="week" checked />Week</label>
+                <label class="choice"><input type="radio" name="period" value="month" />Month</label>
+              </div>
+            </fieldset>
+            </div>
+          </section>
+
+          <section class="specimen options-specimen" aria-labelledby="options-title">
+            <header class="section-head"><span>11</span><h2 id="options-title">Options &amp; progress</h2></header>
+            <div class="specimen-body">
+            <fieldset class="form-group">
+              <legend>Run frequency</legend>
+              <div class="option-group">
+                <label class="option"><span class="option-head"><span class="option-title">Daily</span><input type="radio" name="frequency" value="daily" checked /></span><span class="option-value">7 <span class="metric-unit">runs / week</span></span><span class="option-note">Every morning at 09:00.</span></label>
+                <label class="option"><span class="option-head"><span class="option-title">Weekly</span><input type="radio" name="frequency" value="weekly" /></span><span class="option-value">1 <span class="metric-unit">run / week</span></span><span class="option-note">Monday at 09:00.</span></label>
+              </div>
+            </fieldset>
+            <div class="stack progress-demo">
+              <div class="stack stack-sm"><label class="measure-label" for="import-progress"><span>Import complete</span><span class="font-mono text-muted">84%</span></label><progress class="progress" id="import-progress" value="84" max="100">84%</progress></div>
+              <div class="stack stack-sm"><label class="measure-label" for="capacity-meter"><span>Storage used</span><span class="font-mono text-muted">68 / 100 GB</span></label><meter class="meter" id="capacity-meter" min="0" max="100" low="20" high="80" optimum="50" value="68">68 of 100 GB</meter></div>
+            </div>
+          <aside class="progress-note" aria-label="Loading indicators">
+            <div class="row"><span class="spinner spinner-sm" aria-hidden="true"></span><span class="spinner" aria-hidden="true"></span><span class="spinner spinner-lg" aria-hidden="true"></span></div>
+            <p class="annotation">Work in progress.<br />14 / 20 / 28 px</p>
+          </aside>
+            </div>
+          </section>
+
+          <section class="specimen chart-specimen" aria-labelledby="chart-section-title">
+            <header class="section-head"><span>12</span><h2 id="chart-section-title">Charts</h2><span class="annotation">Lines, labels, context.</span></header>
+            <div class="specimen-body">
+            <figure class="chart" aria-labelledby="throughput-title">
+              <figcaption class="chart-header"><h3 class="chart-title" id="throughput-title">Weekly throughput</h3><span class="chart-caption">Items / day</span></figcaption>
+              <div class="chart-plot" id="throughput-plot" tabindex="0" role="region" aria-label="Weekly throughput chart. Scroll horizontally on small screens; all values are available in the data table below.">
+                <svg class="chart-svg" viewBox="0 0 640 240" role="img" aria-labelledby="plot-title plot-description">
+                  <title id="plot-title">Completed and planned items, Monday to Sunday</title>
+                  <desc id="plot-description">Completed items rise from 34 to 76 across the week. The target is 60 items per day. Use the Inspect day control or data table for exact values.</desc>
+                  <g class="chart-grid"><path d="M48 40H608M48 120H608M48 200H608" /></g>
+                  <g class="chart-axis"><text x="36" y="44" text-anchor="end">100</text><text x="36" y="124" text-anchor="end">50</text><text x="36" y="204" text-anchor="end">0</text><text x="48" y="226" text-anchor="middle">Mon</text><text x="136" y="226" text-anchor="middle">Tue</text><text x="224" y="226" text-anchor="middle">Wed</text><text x="312" y="226" text-anchor="middle">Thu</text><text x="400" y="226" text-anchor="middle">Fri</text><text x="488" y="226" text-anchor="middle">Sat</text><text x="576" y="226" text-anchor="middle">Sun</text></g>
+                  <path class="chart-reference" d="M48 104H608" /><text class="chart-axis" x="608" y="96" text-anchor="end">Target 60</text>
+                  <line class="chart-cursor" id="chart-cursor" x1="312" x2="312" y1="32" y2="200" />
+                  <g data-series="completed"><polyline class="chart-line" points="48,145.6 136,116.8 224,128 312,91.2 400,108.8 488,65.6 576,78.4" /><circle class="chart-point" id="completed-point" cx="312" cy="91.2" r="4" /></g>
+                  <g data-series="planned" style="--series-color: var(--chart-2)"><polyline class="chart-line" stroke-dasharray="5 4" points="48,136 136,112 224,112 312,88 400,88 488,72 576,72" /><circle class="chart-point" id="planned-point" cx="312" cy="88" r="4" /></g>
+                </svg>
+              </div>
+              <div class="chart-legend" role="group" aria-label="Visible chart series">
+                <button class="btn" type="button" data-toggle-series="completed" aria-pressed="true"><span class="legend-key" aria-hidden="true"></span><span class="legend-label">Completed</span></button>
+                <button class="btn" type="button" data-toggle-series="planned" aria-pressed="true" style="--series-color: var(--chart-2)"><span class="legend-key" aria-hidden="true"></span><span class="legend-label">Planned</span></button>
+              </div>
+              <div class="chart-inspector">
+                <div class="field"><label class="field-label" for="chart-day">Inspect day</label><input class="range" id="chart-day" type="range" min="0" max="6" step="1" value="3" aria-valuetext="Thursday: 68 completed, 70 planned" /></div>
+                <output class="chart-tooltip" for="chart-day" aria-live="off"><span id="chart-day-label">Thursday</span><span class="chart-tooltip-row" data-readout="completed"><span class="legend-key" aria-hidden="true"></span>Completed<span class="chart-tooltip-value" id="completed-value">68</span></span><span class="chart-tooltip-row" data-readout="planned" style="--series-color: var(--chart-2)"><span class="legend-key" aria-hidden="true"></span>Planned<span class="chart-tooltip-value" id="planned-value">70</span></span><span id="chart-no-series" hidden>No series selected.</span></output>
+              </div>
+              <details><summary>View chart data</summary><div class="table-wrap"><table class="table table-compact"><caption class="sr-only">Weekly throughput in items per day. Target: 60.</caption><thead><tr><th scope="col">Day</th><th scope="col" class="numeric">Completed</th><th scope="col" class="numeric">Planned</th></tr></thead><tbody><tr><th scope="row">Mon</th><td class="numeric">34</td><td class="numeric">40</td></tr><tr><th scope="row">Tue</th><td class="numeric">52</td><td class="numeric">55</td></tr><tr><th scope="row">Wed</th><td class="numeric">45</td><td class="numeric">55</td></tr><tr><th scope="row">Thu</th><td class="numeric">68</td><td class="numeric">70</td></tr><tr><th scope="row">Fri</th><td class="numeric">57</td><td class="numeric">70</td></tr><tr><th scope="row">Sat</th><td class="numeric">84</td><td class="numeric">80</td></tr><tr><th scope="row">Sun</th><td class="numeric">76</td><td class="numeric">80</td></tr></tbody></table></div></details>
+            </figure>
+            </div>
+          </section>
+
+          <section class="specimen activity-specimen" aria-labelledby="activity-title">
+            <header class="section-head"><span>13</span><h2 id="activity-title">Activity</h2></header>
+            <div class="specimen-body">
+            <ol class="activity-list">
+              <li class="activity-item"><time class="activity-time" datetime="2026-09-14T09:00">Mon · 09:00</time><span class="activity-title">Import completed</span><span class="activity-value">128 items</span></li>
+              <li class="activity-item"><time class="activity-time" datetime="2026-09-14T09:04">Mon · 09:04</time><span class="activity-title">Evaluation finished</span><span class="activity-value">98.4%</span></li>
+              <li class="activity-item"><time class="activity-time" datetime="2026-09-15T09:00">Tue · 09:00</time><span class="activity-title">Next scheduled run</span><span class="badge badge-neutral">Queued</span></li>
+            </ol>
+            </div>
+          </section>
+
+          <section class="specimen forms-specimen" aria-labelledby="forms-title">
+            <header class="section-head"><span>14</span><h2 id="forms-title">Form groups</h2><span class="annotation">A little more structure.</span></header>
+            <div class="specimen-body">
+            <form id="schedule-demo" class="stack stack-lg">
+              <div class="grid grid-2">
+                <fieldset class="form-group stack stack-sm"><legend>After each run</legend><label class="form-check"><input type="checkbox" name="report" checked />Email the report</label><label class="form-check"><input type="checkbox" name="history" />Keep detailed history</label><label class="form-check"><input type="checkbox" disabled />Team notifications · unavailable</label></fieldset>
+                <div class="field"><label class="field-label" for="schedule-note">Notes <span class="text-muted">(optional)</span></label><textarea class="input" id="schedule-note" name="notes" rows="3" placeholder="Add a note for your team." aria-describedby="schedule-note-help"></textarea><p class="field-help" id="schedule-note-help">Included with the report.</p></div>
+              </div>
+              <fieldset class="form-group"><legend>Scheduled runs</legend><div class="repeat-list" id="schedule-rows"></div></fieldset>
+              <div class="row row-between"><button class="btn" id="add-schedule-row" type="button">Add time <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-plus"></use></svg></button><button class="btn btn-primary" type="submit">Save schedule</button></div>
+              <p class="field-help" id="schedule-feedback" role="status"></p>
+            </form>
+            <template id="schedule-row-template"><div class="repeat-row"><div class="field"><label class="field-label" data-label="day">Day</label><select class="input" data-field="day"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select></div><div class="field"><label class="field-label" data-label="time">Time</label><input class="input" data-field="time" type="time" value="09:00" required /></div><button class="iconbtn" type="button" data-remove-row><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button></div></template>
+            </div>
+          </section>
+
         </div>
       </main>
-      <footer class="folio"><span>Josan AI &nbsp; / &nbsp; Shared design</span><a href="#top">Back to top ↑</a></footer>
+      <footer class="folio"><span>Josan AI &nbsp; / &nbsp; Shared design</span><a href="#top">Back to top <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-up"></use></svg></a></footer>
     </div>
 
+    <p id="preview-status" class="sr-only" role="status"></p>
     <dialog class="sidepanel" id="settings-panel" aria-labelledby="panel-title" aria-describedby="panel-description">
       <form class="sidepanel-form" id="settings-form">
-        <header class="sidepanel-head"><div><h2 id="panel-title">Workspace settings</h2><p class="sidepanel-intro" id="panel-description">A preview. Changes apply to this page only.</p></div><button type="button" class="iconbtn ghost" id="close-panel" aria-label="Close settings">×</button></header>
-        <div class="sidepanel-body stack stack-lg">
-          <div class="field"><label class="field-label" for="source-name">Source name</label><input class="input" id="source-name" name="source" placeholder="e.g. Product documentation" required /></div>
-          <div class="field"><label class="field-label" for="run-limit">Run limit</label><div class="input-affix"><input class="input" type="number" min="1" max="1000" value="100" id="run-limit" /><span class="affix">/ mo</span></div></div>
-          <div class="soft soft-info text-sm">Sources are private to this workspace.</div>
+        <header class="sidepanel-head"><div><h2 id="panel-title">Workspace settings</h2><p class="sidepanel-intro" id="panel-description">Changes apply to this preview only.</p></div><button type="button" class="iconbtn" id="close-panel" aria-label="Close panel"><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg></button></header>
+        <div class="sidepanel-body">
+          <fieldset class="panel-fields stack stack-lg" data-fields="workspace">
+            <legend class="sr-only">Workspace settings</legend>
+            <div class="field"><label class="field-label" for="panel-workspace-name">Workspace name</label><input class="input" id="panel-workspace-name" name="workspace" required /></div>
+            <label class="check-row"><span class="check-copy"><span class="check-label">Email notifications</span><span class="check-note">Only when something needs your attention.</span></span><input type="checkbox" role="switch" id="panel-notifications" /><span class="check-control" aria-hidden="true"><span class="check-thumb"></span></span></label>
+          </fieldset>
+          <fieldset class="panel-fields stack stack-lg" data-fields="runs" hidden disabled>
+            <legend class="sr-only">Run configuration</legend>
+            <div class="field"><label class="field-label" for="run-limit">Monthly run limit</label><div class="input-affix"><input class="input" type="number" min="1" max="1000" step="1" value="100" id="run-limit" required /><span class="affix">/ mo</span></div></div>
+            <div class="field"><label class="field-label" for="run-cadence">Schedule</label><select class="input" id="run-cadence"><option value="manual">Run manually</option><option value="daily">Run daily</option><option value="weekly">Run weekly</option></select></div>
+            <p class="panel-note">The limit and schedule are saved in this preview.</p>
+          </fieldset>
+          <fieldset class="panel-fields stack stack-lg" data-fields="source" hidden disabled>
+            <legend class="sr-only">New source</legend>
+            <div class="field"><label class="field-label" for="source-name">Source name</label><input class="input" id="source-name" name="source" placeholder="e.g. Product documentation" required /></div>
+            <p class="panel-note">Sources are private to this workspace.</p>
+          </fieldset>
         </div>
-        <footer class="sidepanel-foot"><button class="btn btn-danger" type="reset">Clear</button><span class="spacer"></span><button class="btn btn-primary" type="submit">Save source</button></footer>
+        <footer class="sidepanel-foot"><button class="btn" type="reset">Reset fields</button><span class="spacer"></span><button class="btn btn-primary" type="submit" id="panel-submit">Save settings</button></footer>
       </form>
     </dialog>
     <script>
+      const accentSelect = document.getElementById('accent-select');
+      accentSelect.value = document.documentElement.dataset.accent || 'teal';
+      accentSelect.addEventListener('change', () => {
+        document.documentElement.dataset.accent = accentSelect.value;
+      });
       const form = document.getElementById('workspace-form');
       const status = document.getElementById('form-status');
       const email = document.getElementById('workspace-email');
@@ -305,6 +469,7 @@
         const validWorkspace = validateField(workspace, 'workspace-error');
         const validEmail = validateField(email, 'email-error');
         if (!validWorkspace || !validEmail) { (!validWorkspace ? workspace : email).focus(); status.textContent = ''; return; }
+        document.getElementById('workspace-card-title').textContent = workspace.value.trim();
         status.textContent = 'Changes saved for this preview.';
       });
       form.addEventListener('reset', () => {
@@ -315,22 +480,165 @@
       notification.querySelector('button').addEventListener('click', () => { notification.hidden = true; restore.hidden = false; restore.focus(); });
       restore.addEventListener('click', () => { notification.hidden = false; restore.hidden = true; notification.querySelector('button').focus(); });
       const panel = document.getElementById('settings-panel');
-      document.querySelectorAll('[data-open-panel]').forEach((button) => {
-        button.addEventListener('click', () => { panel.showModal(); panel.classList.add('open'); document.body.classList.add('modal-open'); });
+      const panelForm = document.getElementById('settings-form');
+      const panelName = document.getElementById('panel-workspace-name');
+      const panelNotifications = document.getElementById('panel-notifications');
+      const runLimit = document.getElementById('run-limit');
+      const runCadence = document.getElementById('run-cadence');
+      const source = document.getElementById('source-name');
+      const previewStatus = document.getElementById('preview-status');
+      const savedRuns = { limit: 100, cadence: 'manual' };
+      const panelLabels = {
+        workspace: ['Workspace settings', 'Save settings'],
+        runs: ['Configure runs', 'Save runs'],
+        source: ['Add a source', 'Add source'],
+      };
+      let panelMode = 'workspace';
+      let sourceCount = 0;
+      let panelOpener = null;
+      document.querySelectorAll('[data-panel]').forEach((button) => {
+        button.addEventListener('click', () => {
+          panelOpener = button;
+          panelMode = button.dataset.panel;
+          document.querySelectorAll('[data-fields]').forEach((fields) => {
+            fields.hidden = fields.dataset.fields !== panelMode;
+            fields.disabled = fields.hidden;
+          });
+          document.getElementById('panel-title').textContent = panelLabels[panelMode][0];
+          document.getElementById('panel-submit').textContent = panelLabels[panelMode][1];
+          panelName.defaultValue = workspace.value;
+          panelNotifications.defaultChecked = form.elements.notifications.checked;
+          runLimit.defaultValue = String(savedRuns.limit);
+          [...runCadence.options].forEach((option) => { option.defaultSelected = option.value === savedRuns.cadence; });
+          panelForm.reset();
+          panel.showModal();
+          panel.classList.add('open');
+          document.body.classList.add('modal-open');
+          document.querySelector('[data-fields="' + panelMode + '"] input').focus({ preventScroll: true });
+        });
       });
       document.getElementById('close-panel').addEventListener('click', () => panel.close());
-      panel.addEventListener('close', () => { panel.classList.remove('open'); document.body.classList.remove('modal-open'); });
-      document.getElementById('settings-form').addEventListener('submit', (event) => {
-        event.preventDefault();
-        const source = document.getElementById('source-name');
-        if (!source.value.trim()) { source.setCustomValidity('Enter a source name.'); source.reportValidity(); return; }
-        document.querySelector('.empty-state-title').textContent = source.value.trim();
-        document.querySelector('.empty-state-copy').textContent = 'Source added to this preview.';
-        document.querySelector('.empty-state-icon').textContent = '✓';
-        panel.close();
+      panel.addEventListener('close', () => {
+        if (panel.open) return;
+        panel.classList.remove('open');
+        document.body.classList.remove('modal-open');
+        panelOpener?.focus({ preventScroll: true });
       });
-      document.getElementById('source-name').addEventListener('input', (event) => event.target.setCustomValidity(''));
-      document.getElementById('settings-form').addEventListener('reset', () => document.getElementById('source-name').setCustomValidity(''));
+      panelForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const textField = panelMode === 'workspace' ? panelName : panelMode === 'source' ? source : null;
+        if (textField && !textField.value.trim()) {
+          textField.setCustomValidity(panelMode === 'source' ? 'Enter a source name.' : 'Enter a workspace name.');
+          textField.reportValidity();
+          return;
+        }
+        if (panelMode === 'workspace') {
+          workspace.value = panelName.value.trim();
+          form.elements.notifications.checked = panelNotifications.checked;
+          validateField(workspace, 'workspace-error');
+          document.getElementById('workspace-card-title').textContent = workspace.value;
+          status.textContent = 'Workspace settings saved for this preview.';
+        } else if (panelMode === 'runs') {
+          savedRuns.limit = Number(runLimit.value);
+          savedRuns.cadence = runCadence.value;
+          document.getElementById('run-summary').textContent = `4 evaluations · ${savedRuns.limit} runs / mo · ${savedRuns.cadence}`;
+          document.getElementById('usage-summary').textContent = `82 of ${savedRuns.limit} runs used.`;
+          document.getElementById('usage-title').textContent = savedRuns.limit <= 82 ? 'Monthly run limit reached.' : savedRuns.limit <= 102 ? 'You’re close to your limit.' : 'Monthly usage is within your limit.';
+          const usageAlert = document.getElementById('usage-title').closest('.alert');
+          usageAlert.classList.toggle('alert-warning', savedRuns.limit <= 102);
+          usageAlert.querySelector('.alert-icon use').setAttribute('href', savedRuns.limit <= 102 ? '#icon-warning' : '#icon-info');
+        } else {
+          sourceCount += 1;
+          document.querySelector('.empty-state-title').textContent = source.value.trim();
+          document.querySelector('.empty-state-copy').textContent = 'Source added to this preview.';
+          document.querySelector('.empty-state-icon use').setAttribute('href', '#icon-check');
+          document.getElementById('source-count').textContent = `${sourceCount} connected ${sourceCount === 1 ? 'source' : 'sources'}`;
+        }
+        panel.close();
+        previewStatus.textContent = panelMode === 'source' ? 'Source added to this preview.' : 'Settings saved for this preview.';
+      });
+      [source, panelName].forEach((field) => field.addEventListener('input', () => field.setCustomValidity('')));
+      panelForm.addEventListener('reset', () => { source.setCustomValidity(''); panelName.setCustomValidity(''); });
+      // Chart interactions are demonstration data; the shared layer supplies styles.
+      const chartDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const chartValues = { completed: [34, 52, 45, 68, 57, 84, 76], planned: [40, 55, 55, 70, 70, 80, 80] };
+      const chartDay = document.getElementById('chart-day');
+      const updateChart = (reveal = false) => {
+        const day = Number(chartDay.value);
+        const x = 48 + day * 88;
+        const cursor = document.getElementById('chart-cursor');
+        cursor.setAttribute('x1', x);
+        cursor.setAttribute('x2', x);
+        document.getElementById('chart-day-label').textContent = chartDays[day];
+        Object.entries(chartValues).forEach(([series, values]) => {
+          document.getElementById(series + '-value').textContent = values[day];
+          const point = document.getElementById(series + '-point');
+          point.setAttribute('cx', x);
+          point.setAttribute('cy', 200 - values[day] * 1.6);
+        });
+        const visible = [...document.querySelectorAll('[data-toggle-series][aria-pressed="true"]')].map(button => button.dataset.toggleSeries);
+        chartDay.setAttribute('aria-valuetext', chartDays[day] + ': ' + (visible.length ? visible.map(series => chartValues[series][day] + ' ' + series).join(', ') : 'no series selected'));
+        document.getElementById('chart-no-series').hidden = visible.length > 0;
+        if (reveal) {
+          const plot = document.getElementById('throughput-plot');
+          const width = plot.querySelector('svg').getBoundingClientRect().width;
+          plot.scrollLeft = x / 640 * width - plot.clientWidth / 2;
+        }
+      };
+      chartDay.addEventListener('input', () => updateChart(true));
+      document.querySelectorAll('[data-toggle-series]').forEach(button => {
+        button.addEventListener('click', () => {
+          const visible = button.getAttribute('aria-pressed') !== 'true';
+          const series = button.dataset.toggleSeries;
+          button.setAttribute('aria-pressed', String(visible));
+          document.querySelector('[data-series="' + series + '"]').toggleAttribute('hidden', !visible);
+          document.querySelector('[data-readout="' + series + '"]').hidden = !visible;
+          updateChart();
+        });
+      });
+      const scheduleForm = document.getElementById('schedule-demo');
+      const scheduleRows = document.getElementById('schedule-rows');
+      const scheduleFeedback = document.getElementById('schedule-feedback');
+      const addTimeButton = document.getElementById('add-schedule-row');
+      let scheduleRowId = 0;
+      const updateScheduleRows = () => {
+        const rows = [...scheduleRows.children];
+        rows.forEach((row, index) => {
+          const remove = row.querySelector('[data-remove-row]');
+          remove.disabled = rows.length === 1;
+          remove.setAttribute('aria-label', 'Remove scheduled time ' + (index + 1));
+        });
+      };
+      const addScheduleRow = (focus = true) => {
+        const row = document.getElementById('schedule-row-template').content.firstElementChild.cloneNode(true);
+        const rowId = ++scheduleRowId;
+        ['day', 'time'].forEach(field => {
+          const input = row.querySelector('[data-field="' + field + '"]');
+          input.id = 'schedule-' + field + '-' + rowId;
+          input.name = field + '-' + rowId;
+          row.querySelector('[data-label="' + field + '"]').htmlFor = input.id;
+        });
+        row.querySelector('[data-remove-row]').addEventListener('click', () => {
+          const next = row.nextElementSibling || row.previousElementSibling;
+          row.remove();
+          updateScheduleRows();
+          scheduleFeedback.textContent = 'Scheduled time removed.';
+          next?.querySelector('select').focus();
+        });
+        scheduleRows.append(row);
+        updateScheduleRows();
+        if (focus) {
+          row.querySelector('select').focus();
+          scheduleFeedback.textContent = 'Scheduled time added.';
+        }
+      };
+      addTimeButton.addEventListener('click', () => addScheduleRow());
+      addScheduleRow(false);
+      scheduleForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const count = scheduleRows.children.length;
+        scheduleFeedback.textContent = count + ' scheduled ' + (count === 1 ? 'run' : 'runs') + ' saved for this preview.';
+      });
     </script>
   </body>
 </html>
