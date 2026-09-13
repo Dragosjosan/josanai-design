@@ -1,4 +1,5 @@
 :root {
+  /* Color */
   --bg: #fbfbfc;
   --surface: #ffffff;
   --ink: #16181c;
@@ -9,12 +10,79 @@
   --hairline-strong: #d7dade;
   --accent: oklch(0.58 0.12 210);
   --accent-soft: oklch(0.96 0.02 210);
-  --danger: oklch(0.55 0.18 25);
+
+  /* State color is a small signal. Surfaces and body copy stay neutral. */
+  --info: var(--accent);
+  --success: #168b4e;
+  --warning: #c1840c;
+  --danger: #d43c35;
+
+  /* Spacing: a 4px base scale. */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Type */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 28px;
+  --text-3xl: 40px;
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* One radius for all component surfaces and controls. */
   --radius: 4px;
   --pad: 40px;
+  --page-gutter: clamp(20px, 5vw, var(--pad));
+  --measure: 68ch;
+  --container-sm: 640px;
+  --container-md: 800px;
+  --container-lg: 1120px;
+  --container-width: var(--container-lg);
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   color-scheme: light;
+}
+
+/* Resolve neutral state aliases in each theme scope, including nested themes. */
+:root,
+[data-theme],
+[data-skin] {
+  --info-soft: var(--surface);
+  --info-ink: var(--ink-soft);
+  --info-border: var(--hairline);
+  --success-soft: var(--surface);
+  --success-ink: var(--ink-soft);
+  --success-border: var(--hairline);
+  --warning-soft: var(--surface);
+  --warning-ink: var(--ink-soft);
+  --warning-border: var(--hairline);
+  --danger-soft: var(--surface);
+  --danger-ink: var(--ink-soft);
+  --danger-border: var(--hairline);
+  --alert: var(--danger);
+  --alert-soft: var(--danger-soft);
+  --alert-ink: var(--danger-ink);
+  --alert-border: var(--danger-border);
 }
 
 [data-theme="dark"] {
@@ -27,6 +95,9 @@
   --hairline: #242830;
   --hairline-strong: #32373f;
   --accent-soft: oklch(0.25 0.05 210);
+  --success: #58ca88;
+  --warning: #e9b347;
+  --danger: #f07870;
   color-scheme: dark;
 }
 
@@ -45,6 +116,7 @@
   --hairline-strong: #bcbcbc;
   --accent: #1a4fff;
   --accent-soft: #eef2ff;
+  --info: #1a4fff;
   --radius: 0;
   --font-sans: "JetBrains Mono", ui-monospace, monospace;
 }
@@ -60,4 +132,5 @@
   --hairline-strong: #3a3a3a;
   --accent: #7ea1ff;
   --accent-soft: #18222e;
+  --info: #7ea1ff;
 }

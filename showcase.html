@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Josan AI design elements. A minimal reference for type, controls, states, and structure." />
+    <title>Elements — Josan AI</title>
+    <link rel="stylesheet" href="./fonts.css" />
+    <link rel="stylesheet" href="./tokens.css" />
+    <link rel="stylesheet" href="./elements.css" />
+    <style>
+      .sheet { width: min(1280px, calc(100% - 96px)); margin-inline: auto; }
+      .masthead { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 28px; border-bottom: 1px solid var(--hairline-strong); }
+      .brand { color: var(--ink); font-size: 13px; font-weight: 600; text-decoration: none; }
+      .meta, .section-head, .annotation, .index, .folio { font-family: var(--font-mono); font-size: 11px; font-weight: 400; }
+      .meta, .annotation, .folio { color: var(--muted); }
+      .masthead .meta { margin: 0; }
+      .intro { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; padding-block: 54px 68px; align-items: end; }
+      .intro-title { grid-column: 1 / 10; }
+      .intro h1 { margin: 12px 0 0 -0.065em; font-size: clamp(72px, 12vw, 164px); font-weight: 500; letter-spacing: -0.085em; line-height: 0.95; }
+      .intro .meta { margin: 0; }
+      .index { grid-column: 11 / 13; display: grid; gap: 7px; padding-bottom: 4px; }
+      .index a { display: flex; justify-content: space-between; gap: 16px; color: var(--ink-soft); text-decoration: none; }
+      .index a:hover { color: var(--accent); }
+      .index span { color: var(--muted); }
+      .composition { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 96px; padding-bottom: 96px; }
+      .specimen { min-width: 0; scroll-margin-top: 32px; }
+      .section-head { display: flex; align-items: baseline; gap: 20px; border-top: 1px solid var(--ink); padding-top: 12px; margin-bottom: 28px; }
+      .section-head h2 { margin: 0; font: inherit; letter-spacing: 0; }
+      .section-head > span:first-child { color: var(--muted); }
+      .section-head .annotation { margin-left: auto; }
+      .controls { grid-column: 1 / 6; }
+      .signals { grid-column: 8 / 13; padding-top: 100px; }
+      .records { grid-column: 2 / 10; }
+      .progress-note { grid-column: 11 / 13; align-self: end; padding-bottom: 14px; }
+      .type { grid-column: 1 / 7; }
+      .foundations { grid-column: 9 / 13; padding-top: 76px; }
+      .structure { grid-column: 2 / 7; }
+      .blank { grid-column: 9 / 13; padding-top: 68px; }
+      .semantics { grid-column: 4 / 12; }
+      .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+      .control-form { margin-top: 32px; }
+      .control-form .field + .field { margin-top: 20px; }
+      .annotation { margin: 16px 0 0; }
+      .form-actions { margin-top: 20px; }
+      .form-status { min-height: 18px; margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+      .state-list { display: flex; flex-wrap: wrap; gap: 12px 20px; margin-bottom: 28px; }
+      .signals .alert:last-of-type { border-bottom: 0; }
+      .signal-foot { display: flex; justify-content: space-between; align-items: baseline; margin-top: 20px; gap: 16px; }
+      .signal-foot .annotation { margin: 0; }
+      .record-name { color: var(--ink); font-weight: 500; }
+      .records .table { background: transparent; }
+      .records .table-wrap { background: transparent; }
+      .records .table th:first-child, .records .table td:first-child { padding-left: 0; }
+      .records .table th:last-child, .records .table td:last-child { padding-right: 0; }
+      .records .table td { padding-block: 18px; }
+      .record-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 20px; }
+      .record-footer p { margin: 0; }
+      .progress-note .row { gap: 12px; color: var(--muted); }
+      .progress-note p { margin-top: 16px; }
+      .type-mark { margin: -14px 0 20px -0.065em; font-size: clamp(110px, 16vw, 210px); font-weight: 400; letter-spacing: -0.085em; line-height: 1; }
+      .type-sizes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 12px; align-items: baseline; }
+      .type-sizes span { display: flex; flex-direction: column; gap: 6px; }
+      .type-sizes small { color: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+      .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 28px; }
+      .swatch { display: block; height: 42px; border: 1px solid var(--hairline); border-radius: var(--radius); }
+      .palette .annotation { display: block; margin-top: 8px; font-size: 10px; }
+      .foundation-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding-block: 12px; border-bottom: 1px solid var(--hairline); font-size: 12px; }
+      .foundation-row span:last-child { font-family: var(--font-mono); color: var(--muted); font-size: 11px; }
+      .spacing-scale { display: flex; align-items: end; gap: 8px; height: 68px; margin-top: 24px; }
+      .spacing-scale i { width: 12px; height: var(--step); background: var(--hairline-strong); }
+      .spacing-scale i:last-child { background: var(--ink); }
+      .structure .card { margin-top: 28px; }
+      .primitive-set { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      .primitive-set .annotation { margin: 0 0 8px; }
+      .primitive-block { min-height: 16px; border: 1px solid var(--hairline-strong); border-radius: var(--radius); background: var(--surface); flex: 1; }
+      .primitive-set .split { grid-template-columns: 2fr 1fr; gap: 8px; }
+      .primitive-set .grid { gap: 8px; }
+      .blank .empty-state { padding-top: 0; }
+      .semantic-columns { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; }
+      .semantic-columns h3 { font-size: 20px; font-weight: 500; }
+      .semantic-columns p, .semantic-columns li, .semantic-columns blockquote { font-size: 13px; color: var(--ink-soft); }
+      details { border-top: 1px solid var(--hairline); margin-top: 24px; padding-top: 12px; }
+      summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+      details pre { margin-top: 16px; }
+      .folio { display: flex; justify-content: space-between; gap: 24px; padding-block: 24px 40px; border-top: 1px solid var(--hairline-strong); }
+      .folio a { color: inherit; }
+      .skip-link { position: absolute; top: 8px; left: 8px; z-index: 60; padding: 8px; background: var(--surface); transform: translateY(-150%); }
+      .skip-link:focus { transform: none; }
+      dialog.sidepanel:not([open]) { display: none; }
+      dialog.sidepanel::backdrop { background: rgb(0 0 0 / 15%); }
+      .sidepanel-head h2 { font-size: 16px; margin: 0; }
+      [hidden] { display: none !important; }
+      @media (max-width: 960px) {
+        .sheet { width: calc(100% - 48px); }
+        .intro-title { grid-column: 1 / 10; }
+        .index { grid-column: 10 / 13; }
+        .controls { grid-column: 1 / 7; }
+        .signals { grid-column: 8 / 13; padding-top: 64px; }
+        .records { grid-column: 1 / 10; }
+        .progress-note { grid-column: 10 / 13; }
+        .foundations { grid-column: 8 / 13; }
+        .structure { grid-column: 1 / 7; }
+        .blank { grid-column: 8 / 13; }
+        .semantics { grid-column: 2 / 12; }
+        .state-list { gap: 12px; }
+      }
+      @media (max-width: 640px) {
+        .sheet { width: calc(100% - 40px); }
+        .masthead { padding-block: 20px; }
+        .masthead .meta { font-size: 10px; }
+        .intro { grid-template-columns: 1fr; gap: 32px; padding-block: 40px 48px; }
+        .intro-title, .index { grid-column: auto; }
+        .intro h1 { font-size: clamp(66px, 17vw, 108px); }
+        .index { grid-template-columns: 1fr 1fr; gap: 10px 32px; }
+        .composition { display: flex; flex-direction: column; gap: 56px; padding-bottom: 56px; }
+        .specimen { width: 100%; padding-top: 0; }
+        .signals, .foundations, .blank { width: 88%; margin-left: auto; }
+        .section-head { margin-bottom: 24px; }
+        .progress-note { align-self: flex-start; margin-top: -28px; padding: 0; }
+        .progress-note p { margin-top: 8px; }
+        .records .table th, .records .table td { padding-inline: 8px; font-size: 11px; }
+        .type-mark { font-size: 140px; }
+        .semantic-columns { grid-template-columns: 1fr; gap: 24px; }
+        .folio { font-size: 10px; }
+      }
+    </style>
+  </head>
+  <body id="top">
+    <a href="#components" class="skip-link">Skip to components</a>
+    <div class="sheet">
+      <header class="masthead">
+        <a href="#top" class="brand">josan.ai / design</a>
+        <p class="meta">Interface studies &nbsp; / &nbsp; 01</p>
+      </header>
+      <main>
+        <header class="intro">
+          <div class="intro-title">
+            <p class="meta">The shared collection</p>
+            <h1>Elements.</h1>
+          </div>
+          <nav class="index" aria-label="Showcase sections">
+            <a href="#components"><span>01</span> Controls</a>
+            <a href="#states"><span>02</span> States</a>
+            <a href="#records"><span>03</span> Records</a>
+            <a href="#foundations"><span>04</span> Foundations</a>
+          </nav>
+        </header>
+        <div class="composition">
+          <section id="components" class="specimen controls" aria-labelledby="controls-title">
+            <header class="section-head"><span>01</span><h2 id="controls-title">Controls</h2><span class="annotation">Do one thing.</span></header>
+            <div class="actions">
+              <button type="submit" form="workspace-form" class="btn btn-primary">Save changes</button>
+              <button type="reset" form="workspace-form" class="btn">Reset</button>
+              <button type="button" class="btn btn-ghost" data-open-panel>Settings <span aria-hidden="true">↗</span></button>
+              <button type="button" class="btn btn-compact" disabled>Unavailable</button>
+            </div>
+            <form id="workspace-form" class="control-form" novalidate>
+              <div class="field">
+                <label class="field-label" for="workspace-name">Workspace</label>
+                <input class="input" id="workspace-name" name="workspace" value="Personal workspace" required aria-describedby="workspace-error" />
+                <p class="field-error" id="workspace-error" hidden>Enter a workspace name.</p>
+              </div>
+              <div class="field">
+                <label class="field-label" for="workspace-email">Email</label>
+                <input class="input" id="workspace-email" name="email" type="email" value="dragos@" required aria-invalid="true" aria-describedby="email-error" />
+                <p class="field-error" id="email-error">Enter a valid email address.</p>
+              </div>
+              <label class="check-row">
+                <span class="check-copy"><span class="check-label">Email notifications</span><span class="check-note">Only when something needs your attention.</span></span>
+                <input type="checkbox" name="notifications" checked />
+                <span class="check-control" aria-hidden="true"><span class="check-thumb"></span></span>
+              </label>
+              <p id="form-status" class="form-status" role="status"></p>
+            </form>
+          </section>
+
+          <section id="states" class="specimen signals" aria-labelledby="states-title">
+            <header class="section-head"><span>02</span><h2 id="states-title">States</h2><span class="annotation">Just enough.</span></header>
+            <div class="state-list" aria-label="Status badges">
+              <span class="badge badge-neutral">Draft</span><span class="badge">Running</span><span class="badge badge-success">Saved</span><span class="badge badge-warning">Review</span><span class="badge badge-danger">Failed</span>
+            </div>
+            <div id="notification" class="alert">
+              <span class="alert-icon" aria-hidden="true">i</span><div class="alert-content"><h3 class="alert-title">An update is available.</h3></div>
+              <button type="button" class="alert-close" aria-label="Dismiss update">×</button>
+            </div>
+            <div class="alert alert-success"><span class="alert-icon" aria-hidden="true">✓</span><div class="alert-content"><h3 class="alert-title">All changes saved.</h3></div></div>
+            <div class="alert alert-warning"><span class="alert-icon" aria-hidden="true">!</span><div class="alert-content"><h3 class="alert-title">You’re close to your limit.</h3><p>82 of 100 runs used.</p></div></div>
+            <div class="alert alert-danger"><span class="alert-icon" aria-hidden="true">×</span><div class="alert-content"><h3 class="alert-title">Connection interrupted.</h3><p>Check your credentials and try again.</p></div></div>
+            <div class="signal-foot"><p class="annotation">A mark. A line. A message.</p><button type="button" class="linkbtn" id="restore-notification" hidden>Restore update</button></div>
+          </section>
+
+          <section id="records" class="specimen records" aria-labelledby="records-title">
+            <header class="section-head"><span>03</span><h2 id="records-title">Records</h2><span class="annotation">Recent evaluations</span></header>
+            <div class="table-wrap">
+              <table class="table table-hover">
+                <caption class="sr-only">Recent evaluation runs</caption>
+                <thead><tr><th scope="col">Name</th><th scope="col">State</th><th scope="col" class="numeric">Score</th><th scope="col" class="numeric">Run</th></tr></thead>
+                <tbody>
+                  <tr><td class="record-name">Grounded answers</td><td><span class="badge badge-success">Passed</span></td><td class="numeric">98.4</td><td class="numeric">001</td></tr>
+                  <tr><td class="record-name">Retrieval quality</td><td><span class="badge badge-warning">Review</span></td><td class="numeric">82.1</td><td class="numeric">002</td></tr>
+                  <tr><td class="record-name">Response latency</td><td><span class="badge">Running</span></td><td class="numeric">—</td><td class="numeric">003</td></tr>
+                  <tr><td class="record-name">Source connection</td><td><span class="badge badge-danger">Failed</span></td><td class="numeric">—</td><td class="numeric">004</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="record-footer"><p class="annotation">4 evaluations</p><button class="linkbtn" type="button" data-open-panel>Configure runs <span aria-hidden="true">↗</span></button></div>
+          </section>
+          <aside class="progress-note" aria-label="Loading indicators">
+            <div class="row"><span class="spinner spinner-sm" aria-hidden="true"></span><span class="spinner" aria-hidden="true"></span><span class="spinner spinner-lg" aria-hidden="true"></span></div>
+            <p class="annotation">Work in progress.<br />14 / 20 / 28 px</p>
+          </aside>
+
+          <section id="foundations" class="specimen type" aria-labelledby="type-title">
+            <header class="section-head"><span>04</span><h2 id="type-title">Typography</h2><span class="annotation">Inter / JetBrains Mono</span></header>
+            <p class="type-mark" aria-hidden="true">Aa.</p>
+            <div class="type-sizes" aria-label="Type scale in pixels">
+              <span class="text-xs">Detail<small>11 / xs</small></span><span class="text-sm">Label<small>12 / sm</small></span><span class="text-md">Control<small>13 / md</small></span><span class="text-base">Body<small>14 / base</small></span>
+              <span class="text-lg">Text<small>16 / lg</small></span><span class="text-xl">Title<small>20 / xl</small></span><span class="text-2xl">Type<small>28 / 2xl</small></span><span class="text-3xl">Aa<small>40 / 3xl</small></span>
+            </div>
+          </section>
+          <section class="specimen foundations" aria-labelledby="palette-title">
+            <header class="section-head"><span>05</span><h2 id="palette-title">Palette &amp; measure</h2></header>
+            <div class="palette">
+              <div><i class="swatch" style="background: var(--bg)"></i><span class="annotation">Paper</span></div>
+              <div><i class="swatch" style="background: var(--hairline-strong)"></i><span class="annotation">Line</span></div>
+              <div><i class="swatch" style="background: var(--ink)"></i><span class="annotation">Ink</span></div>
+              <div><i class="swatch" style="background: var(--accent)"></i><span class="annotation">Accent</span></div>
+            </div>
+            <div class="foundation-row"><span>Corner radius</span><span>4 px / everywhere</span></div>
+            <div class="foundation-row"><span>Border</span><span>1 px</span></div>
+            <div class="foundation-row"><span>Spacing unit</span><span>4 px</span></div>
+            <div class="spacing-scale" aria-hidden="true"><i style="--step: 4px"></i><i style="--step: 8px"></i><i style="--step: 12px"></i><i style="--step: 16px"></i><i style="--step: 24px"></i><i style="--step: 32px"></i><i style="--step: 48px"></i><i style="--step: 64px"></i></div>
+            <p class="annotation">4 · 8 · 12 · 16 · 24 · 32 · 48 · 64</p>
+          </section>
+
+          <section id="layout" class="specimen structure" aria-labelledby="structure-title">
+            <header class="section-head"><span>06</span><h2 id="structure-title">Structure</h2><span class="annotation">Space does the work.</span></header>
+            <div class="primitive-set">
+              <div><p class="annotation">Stack</p><div class="stack stack-sm" aria-label="Three stacked blocks"><i class="primitive-block"></i><i class="primitive-block"></i><i class="primitive-block"></i></div></div>
+              <div><p class="annotation">Row</p><div class="row row-sm" aria-label="Three blocks in a row"><i class="primitive-block"></i><i class="primitive-block"></i><i class="primitive-block"></i></div></div>
+              <div><p class="annotation">Grid</p><div class="grid grid-2" aria-label="Two by two grid"><i class="primitive-block"></i><i class="primitive-block"></i><i class="primitive-block"></i><i class="primitive-block"></i></div></div>
+              <div><p class="annotation">Split</p><div class="split" aria-label="Two unequal columns"><i class="primitive-block"></i><i class="primitive-block"></i></div></div>
+            </div>
+            <article class="card card-compact">
+              <header class="card-header"><h3 class="card-title">Personal workspace</h3><span class="badge badge-neutral">Private</span></header>
+              <p class="card-copy">Your sources, evaluations, and settings.</p>
+              <footer class="card-footer"><span class="text-sm text-muted">3 connected sources</span><button type="button" class="iconbtn ghost" data-open-panel aria-label="Open workspace settings">↗</button></footer>
+            </article>
+          </section>
+          <section class="specimen blank" aria-labelledby="empty-title">
+            <header class="section-head"><span>07</span><h2 id="empty-title">Empty</h2></header>
+            <div class="empty-state">
+              <span class="empty-state-icon" aria-hidden="true">＋</span>
+              <h3 class="empty-state-title">No sources yet.</h3>
+              <p class="empty-state-copy">Add your first source to get started.</p>
+              <div class="empty-state-actions"><button type="button" class="btn" data-open-panel>Add a source <span aria-hidden="true">↗</span></button></div>
+            </div>
+          </section>
+
+          <section id="semantics" class="specimen semantics" aria-labelledby="semantics-title">
+            <header class="section-head"><span>08</span><h2 id="semantics-title">Content</h2><span class="annotation">Native HTML</span></header>
+            <div class="semantic-columns">
+              <article><h3>A place for the details.</h3><p>Body text, a <a href="./README.md">useful link</a>, and enough room to read. Emphasis comes from <strong>weight</strong> and <em>rhythm</em>.</p><blockquote>Keep only what helps.</blockquote><p class="text-sm">Use <kbd>Tab</kbd> to move between controls.</p></article>
+              <div><ol><li>Connect a source.</li><li>Run an evaluation.</li><li>Review the result.</li></ol><div class="divider"></div><div class="divider-label">or start with a template</div></div>
+            </div>
+            <details><summary>Implementation reference</summary><pre><code>&lt;button class="btn btn-primary"&gt;Save&lt;/button&gt;
+&lt;span class="badge badge-success"&gt;Saved&lt;/span&gt;
+&lt;div class="alert alert-warning" role="alert"&gt;
+  &lt;span class="alert-icon" aria-hidden="true"&gt;!&lt;/span&gt;
+  &lt;div class="alert-content"&gt;Check your usage.&lt;/div&gt;
+&lt;/div&gt;</code></pre><p class="text-sm text-muted">Import fonts.css, tokens.css, then elements.css. <a href="./README.md">Full reference</a>.</p></details>
+          </section>
+        </div>
+      </main>
+      <footer class="folio"><span>Josan AI &nbsp; / &nbsp; Shared design</span><a href="#top">Back to top ↑</a></footer>
+    </div>
+
+    <dialog class="sidepanel" id="settings-panel" aria-labelledby="panel-title" aria-describedby="panel-description">
+      <form class="sidepanel-form" id="settings-form">
+        <header class="sidepanel-head"><div><h2 id="panel-title">Workspace settings</h2><p class="sidepanel-intro" id="panel-description">A preview. Changes apply to this page only.</p></div><button type="button" class="iconbtn ghost" id="close-panel" aria-label="Close settings">×</button></header>
+        <div class="sidepanel-body stack stack-lg">
+          <div class="field"><label class="field-label" for="source-name">Source name</label><input class="input" id="source-name" name="source" placeholder="e.g. Product documentation" required /></div>
+          <div class="field"><label class="field-label" for="run-limit">Run limit</label><div class="input-affix"><input class="input" type="number" min="1" max="1000" value="100" id="run-limit" /><span class="affix">/ mo</span></div></div>
+          <div class="soft soft-info text-sm">Sources are private to this workspace.</div>
+        </div>
+        <footer class="sidepanel-foot"><button class="btn btn-danger" type="reset">Clear</button><span class="spacer"></span><button class="btn btn-primary" type="submit">Save source</button></footer>
+      </form>
+    </dialog>
+    <script>
+      const form = document.getElementById('workspace-form');
+      const status = document.getElementById('form-status');
+      const email = document.getElementById('workspace-email');
+      const workspace = document.getElementById('workspace-name');
+      const validateField = (field, errorId) => {
+        const valid = field.checkValidity() && field.value.trim().length > 0;
+        field.setAttribute('aria-invalid', String(!valid));
+        document.getElementById(errorId).hidden = valid;
+        return valid;
+      };
+      email.addEventListener('input', () => { validateField(email, 'email-error'); status.textContent = ''; });
+      workspace.addEventListener('input', () => { validateField(workspace, 'workspace-error'); status.textContent = ''; });
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const validWorkspace = validateField(workspace, 'workspace-error');
+        const validEmail = validateField(email, 'email-error');
+        if (!validWorkspace || !validEmail) { (!validWorkspace ? workspace : email).focus(); status.textContent = ''; return; }
+        status.textContent = 'Changes saved for this preview.';
+      });
+      form.addEventListener('reset', () => {
+        requestAnimationFrame(() => { validateField(workspace, 'workspace-error'); validateField(email, 'email-error'); status.textContent = ''; });
+      });
+      const notification = document.getElementById('notification');
+      const restore = document.getElementById('restore-notification');
+      notification.querySelector('button').addEventListener('click', () => { notification.hidden = true; restore.hidden = false; restore.focus(); });
+      restore.addEventListener('click', () => { notification.hidden = false; restore.hidden = true; notification.querySelector('button').focus(); });
+      const panel = document.getElementById('settings-panel');
+      document.querySelectorAll('[data-open-panel]').forEach((button) => {
+        button.addEventListener('click', () => { panel.showModal(); panel.classList.add('open'); document.body.classList.add('modal-open'); });
+      });
+      document.getElementById('close-panel').addEventListener('click', () => panel.close());
+      panel.addEventListener('close', () => { panel.classList.remove('open'); document.body.classList.remove('modal-open'); });
+      document.getElementById('settings-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const source = document.getElementById('source-name');
+        if (!source.value.trim()) { source.setCustomValidity('Enter a source name.'); source.reportValidity(); return; }
+        document.querySelector('.empty-state-title').textContent = source.value.trim();
+        document.querySelector('.empty-state-copy').textContent = 'Source added to this preview.';
+        document.querySelector('.empty-state-icon').textContent = '✓';
+        panel.close();
+      });
+      document.getElementById('source-name').addEventListener('input', (event) => event.target.setCustomValidity(''));
+      document.getElementById('settings-form').addEventListener('reset', () => document.getElementById('source-name').setCustomValidity(''));
+    </script>
+  </body>
+</html>
